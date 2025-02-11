@@ -1,0 +1,110 @@
+<html>
+<head>
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
+    <link rel="manifest" href="/manifest.webmanifest" crossorigin="use-credentials"/>
+    <meta name="mobile-web-app-capable" content="yes">
+</head>
+
+<body>
+
+<button id="install" class="install">install</button>
+
+<img src="assets/icons/icon-384x384.png" class="barrier" alt="">
+
+<script>
+    let installPrompt = null;
+    const installButton = document.getElementById("install");
+    window.addEventListener("beforeinstallprompt", (event) => {
+        event.preventDefault()
+        installPrompt = event;
+        installButton.style.display = "block"
+    });
+    installButton.addEventListener("click", async () => {
+        const result = await installPrompt.prompt();
+    });
+</script>
+
+
+<script>
+    let secret = window.location.hash.substring(1);
+
+
+    const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+    const okGif = () => {
+        document.body.style.cssText = 'background: url(/gif/bye.gif) no-repeat center center fixed; background-size: cover';
+    }
+
+    const waitGif = () => {
+        document.body.style.cssText = 'background: url(/gif/wait.webp) no-repeat center center fixed; background-size: cover';
+    }
+    const open = async () => {
+        const URL = `https://faas-ams3-2a2df116.doserverless.co/api/v1/web/fn-${secret.split(",")[0]}-dc06-41fb-9dc5-944127c830d2/default/get-away`
+        const SECRET = secret.split(",")[1];
+
+        const OUT = await fetch(URL, {
+            method: "POST",
+            cache: "no-store",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({"secret": SECRET})
+        })
+
+        const TEXT = await OUT.text()
+
+        if (TEXT === "OK") {
+            okGif()
+            await sleep(2000);
+            window.close();
+        }
+    }
+
+    if (secret) {
+        localStorage.setItem("secret", secret)
+    } else {
+        secret = localStorage.getItem("secret")
+    }
+    if (secret) {
+        waitGif();
+        open();
+    }
+</script>
+
+<script>
+    if ("serviceWorker" in navigator) {
+        navigator.serviceWorker.register("/service-worker.js")
+            .then(() => console.log("Service Worker geregistreerd"))
+            .catch((error) => console.error("Service Worker registratie mislukt:", error));
+    }
+</script>
+
+<style>
+    .barrier {
+        position: fixed;
+        width: 30vw;
+        bottom: 15px;
+        right: 15px;
+        border-radius: 25px;
+    }
+
+    .install {
+        display: none;
+        position: fixed;
+        width: 90vw;
+        top: 30px;
+        left: 5vw;
+
+        background-color: #1b4e0a; /* Green */
+        border: none;
+        color: white;
+        font-weight: bold;
+        padding: 15px 32px;
+        text-align: center;
+        text-decoration: none;
+        font-size: 20px;
+    }
+</style>
+</body>
+</html>
