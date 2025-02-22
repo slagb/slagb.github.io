@@ -55,13 +55,13 @@
         })
 
         const response = await OUT.json()
-        console.log("ben ik")
-        console.log(response);
+        // console.log("ben ik")
+        // console.log(response);
 
         if (response.status === "OK") {
             okGif()
             await sleep(2000);
-            // window.close();
+            window.close();
         }
     }
 
