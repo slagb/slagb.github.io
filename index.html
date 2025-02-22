@@ -33,6 +33,7 @@
     const sleep = ms => new Promise(r => setTimeout(r, ms));
 
     const okGif = () => {
+        console.log("okGif")
         document.body.style.cssText = 'background: url(/gif/bye.gif) no-repeat center center fixed; background-size: cover';
     }
 
@@ -40,6 +41,7 @@
         document.body.style.cssText = 'background: url(/gif/wait.webp) no-repeat center center fixed; background-size: cover';
     }
     const open = async () => {
+        console.log(">>>>> open")
         const URL = `https://faas-ams3-2a2df116.doserverless.co/api/v1/web/fn-${secret.split(",")[0]}-dc06-41fb-9dc5-944127c830d2/default/get-away`
         const SECRET = secret.split(",")[1];
 
@@ -52,12 +54,14 @@
             body: JSON.stringify({"secret": SECRET})
         })
 
-        const TEXT = await OUT.text()
+        const response = await OUT.json()
+        console.log("ben ik")
+        console.log(response);
 
-        if (TEXT === "OK") {
+        if (response.status === "OK") {
             okGif()
             await sleep(2000);
-            window.close();
+            // window.close();
         }
     }
 
